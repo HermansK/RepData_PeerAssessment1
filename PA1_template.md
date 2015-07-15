@@ -1,28 +1,37 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
-```{r}
 
+```r
 wd <- getwd()
 download.file(url="https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip",destfile = wd, method = "curl")
+```
+
+```
+## Warning: running command 'curl
+## "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip" -o
+## "C:/Users/KiHr/Documents/GitHub/repdata_peerassessment1"' had status 127
+```
+
+```
+## Warning in download.file(url =
+## "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", :
+## download had nonzero exit status
+```
+
+```r
 list.files <-unzip("activity.zip",list=TRUE)
 unzip <- unz("activity.zip", list.files$Name[1])
 activity_raw <- read.csv(unz("activity.zip", list.files$Name[1]))
 activity_raw$date <- as.Date(activity_raw$date)
-
 ```
 
 ## What is mean total number of steps taken per day?
 
-```{r}
 
+```r
 #prepare data for histogram
 stepsPerDay <- aggregate(activity_raw$steps, by = list(activity_raw$date), sum)
 meanStepsPerDay <- mean(stepsPerDay$x, na.rm = T)
@@ -33,12 +42,14 @@ hist(x = stepsPerDay$x, xlab = "Steps taken", main = "Histogram of the total num
 
 #Add mean and median steps per day in plot
 text(x  = 20000, y = 15,labels= paste("Steps taken per day:", "\n", "mean = ", round(meanStepsPerDay, digits=2), "\n", "median =", medianStepsPerDay))
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 #Preparation for plot
 activity_naRmSteps <- activity_raw[! is.na(activity_raw$steps),]
 averageStepsPerInterval <- aggregate(activity_naRmSteps$steps, by = list(activity_naRmSteps$interval), mean)
@@ -51,9 +62,12 @@ maxStepsInterval <- averageStepsPerInterval[max(averageStepsPerInterval$x),]
 text(x  = 1900, y = 200,labels= paste("Interval with highest average steps:", "\n", "Interval = ", maxStepsInterval$Group.1, ", mean = ", round(maxStepsInterval$x, digits=2)))
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
 ## Imputing missing values
 
-```{r}
+
+```r
 #Which columns contain missings?
 naSteps <- activity_raw$steps[is.na(activity_raw$steps)]
 naDate <- activity_raw$date[is.na(activity_raw$date)]
@@ -81,17 +95,20 @@ hist(x = stepsPerDayNaRM$x, xlab = "Steps taken", main = "Histogram of the total
 text(x  = 20000, y = 25,labels= paste("Steps taken per day:", "\n", "mean = ", round(meanStepsPerDay, digits=2), "\n", "median =", medianStepsPerDay))
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
 ###Missing value strategy
 
 Column(s) that contain missing values are/is: <br> 
-`r outputColumns`
+Steps
 
 The missing values of this column(s) was replaced with the average: <br>
-`r meanSteps`
+37.3825996
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r fig.show='hold', out.width=c('450px', '450px')}
+
+```r
 #Create weekWeekend variable
 activity_missingsReplaced$weekday <- weekdays(activity_missingsReplaced$date)
 activity_missingsReplaced$weekWeekend <- "Weekday"
@@ -108,5 +125,6 @@ averageStepsIntervalWeekend <- averageStepsIntervalWeekWeekend[averageStepsInter
 plot(averageStepsIntervalWeek$Group.1, averageStepsIntervalWeek$x, type = "l", lwd = 3, xlab = "Interval", ylab = "Average steps", main = "Average steps per interval during weekdays", col = "orange")
 
 plot(averageStepsIntervalWeekend$Group.1, averageStepsIntervalWeekend$x, type = "l", lwd = 3, xlab = "Interval", ylab = "Average steps", main = "Average steps per interval during weekends", col = "orange")
-
 ```
+
+<img src="PA1_template_files/figure-html/unnamed-chunk-5-1.png" title="" alt="" width="450px" /><img src="PA1_template_files/figure-html/unnamed-chunk-5-2.png" title="" alt="" width="450px" />
